@@ -5,7 +5,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="w-full py-3 px-6 shadow-md">
+      <div className="w-full py-3 px-6 shadow-sm">
         <div className="relative flex items-center justify-between md:justify-normal">
           <div className="text-2xl font-bold w-0">Weatherly</div>
           <div className="absolute md:left-1/2 md:right-auto right-[-3rem] transform -translate-x-1/2">
@@ -60,6 +60,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+      <div className="w-full h-[0.5px] bg-[#3741514f]"></div>
     </>
   );
 };
