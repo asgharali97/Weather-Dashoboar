@@ -1,3 +1,4 @@
+import HistoryChart from "./components/HistoryChart"
 import Navbar from "./components/Navbar"
 import LandingPage from "./Pages/LandingPage"
 
@@ -8,6 +9,7 @@ function App() {
       <div className="w-full h-screen bg-[#E7E5E4] text-[#374151]">
         <Navbar />
         <LandingPage/>
+        <HistoryChart/>
       </div>
     </>
   )

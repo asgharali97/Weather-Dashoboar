@@ -99,7 +99,7 @@ const Forecast = () => {
 
   return (
     <>
-      <div className="w-full py-12 px-8 mt-8">
+      <div className="w-full py-12 mt-8">
          <div className="w-full bg-white rounded-md shadow-md p-8 ">
             <div className="flex flex-col sm:flex-row justify-between">
               <h4 className="text-xl font-bold sm:font-medium text-center sm:text-start mb-4">{forecast ? "7 Hourly forecast" : "7 day forecast"}</h4>

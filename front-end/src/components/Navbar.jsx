@@ -1,5 +1,5 @@
 import { useState } from "react";
-import loaction from '../assets/location.svg'
+import loaction from "../assets/location.svg";
 const Navbar = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [cityValue, setCityValue] = useState("Karachi");
@@ -16,12 +16,17 @@ const Navbar = () => {
                   type="text"
                   placeholder="Enter Your City Name"
                   className="py-1 pl-[3rem] pr-4 rounded-lg border border-[#828282] outline-none w-[10rem] sm:w-[15rem] md:w-[20rem] focus:border-[#6B7280]"
-                  value={cityValue} 
+                  value={cityValue}
                   onChange={(e) => setCityValue(e.target.value)}
                   onBlur={() => setIsEditable(false)}
                   autoFocus
                 />
-                <img src={loaction} alt="location" className="cursor-pointer absolute left-3 top-[0.4rem] transform -translate-0"/>
+
+                <img
+                  src={loaction}
+                  alt="location"
+                  className="cursor-pointer absolute left-3 top-[0.4rem] transform -translate-0"
+                />
               </div>
             ) : (
               <div
