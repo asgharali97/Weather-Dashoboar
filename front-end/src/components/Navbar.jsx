@@ -1,13 +1,15 @@
 import { useState } from "react";
 import loaction from "../assets/location.svg";
+import { Forward } from "lucide-react";
+import Button from "./Button";
 const Navbar = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [cityValue, setCityValue] = useState("Karachi");
 
   return (
     <>
-      <div className="w-full py-3 px-6 shadow-sm">
-        <div className="relative flex items-center justify-between md:justify-normal">
+      <div className="w-full py-3 px-6 shadow-sm ">
+        <div className="relative flex items-center justify-between">
           <div className="text-2xl font-bold w-0">Weatherly</div>
           <div className="absolute md:left-1/2 md:right-auto right-[-3rem] transform -translate-x-1/2">
             {isEditable ? (
@@ -33,12 +35,25 @@ const Navbar = () => {
                 onClick={() => setIsEditable(true)}
                 className="flex items-center gap-4 cursor-pointer"
               >
-                <img src={loaction} alt="location" />
+                <img
+                  src={loaction}
+                  alt="location"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                />
                 <h4 className="text-md md:text-lg font-bold cursor-pointer">
                   {cityValue ? cityValue : "Karachi"}
                 </h4>
               </div>
             )}
+          </div>
+          <div className="relative md:block hidden">
+           <Button 
+           content='share'
+           Icon={Forward}
+           bg="#6366F1"
+           text="#ffff"
+           tooltip="share weather"
+           />
           </div>
         </div>
       </div>

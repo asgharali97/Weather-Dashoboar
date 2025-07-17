@@ -103,9 +103,9 @@ const Forecast = () => {
          <div className="w-full bg-white rounded-md shadow-md p-8 ">
             <div className="flex flex-col sm:flex-row justify-between">
               <h4 className="text-xl font-bold sm:font-medium text-center sm:text-start mb-4">{forecast ? "7 Hourly forecast" : "7 day forecast"}</h4>
-              <button className="py-2 px-4 rounded-full bg-[#6366F1] text-white cursor-pointer hover:bg-[#4F46E5] hover:shadow-md" onClick={() => setForecast(!forecast)}>{forecast ? "day forecast" : "Hourly forecast"}</button>
+              <button className="py-2 px-4 rounded-full bg-[#6366F1] text-white text-md font-medium cursor-pointer hover:bg-[#4F46E5] hover:shadow-md" onClick={() => setForecast(!forecast)}>{forecast ? "day forecast" : "Hourly forecast"}</button>
             </div>
-            <Swiper spaceBetween={16} slidesPerView={'auto'} className='mt-8' style={{padding:"1rem 0"}}>
+            <Swiper spaceBetween={16} slidesPerView={'auto'} className='mt-8 ' style={{padding:"1rem 0 1rem 1rem"}}>
               {
               forecast ? hourForecast.map((item, index) => (
                 <SwiperSlide key={index} style={{ width: 'auto' }}>
