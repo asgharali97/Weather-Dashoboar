@@ -6,7 +6,7 @@ import Wind from "../assets/wind.jsx";
 import temp from "../assets/temp.svg";
 import speed from "../assets/speed.svg";
 import airQuality from "../assets/airQuality.svg";
-import compass from "../assets/compass.svg";
+import Compass from "../assets/compass.jsx";
 const Cards = () => {
 
   const cards = [
@@ -39,8 +39,7 @@ const Cards = () => {
       Title: "Wind deg",
       svg: <Wind color="#6366F1"/>,
       value: "180°",
-      subDetail: '',
-      icon: compass
+      subDetail: <Compass/>,
     },
     {
       Title: "Temp min/max",

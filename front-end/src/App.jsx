@@ -13,8 +13,6 @@ function App() {
             <Button
               content="share"
               Icon={Forward}
-              bg="#6366F1"
-              text="#ffff"
               tooltip="share weather"
             />
           </div>

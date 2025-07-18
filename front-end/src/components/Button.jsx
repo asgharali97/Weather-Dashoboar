@@ -2,9 +2,15 @@ import { useState, useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-const Button = ({ content, Icon, tooltip, bg="#1E293B", text="#ffff" }) => {
-  
-    const [isHovered,setIsHovered] = useState(false)
+const Button = ({
+  type = "button",
+  content,
+  Icon,
+  tooltip,
+  bg = "bg-[#6366f1]",
+  text = "text-[#ffff]",
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
   const tooltipRef = useRef(null);
   useGSAP(() => {
     if (isHovered) {
@@ -17,13 +23,14 @@ const Button = ({ content, Icon, tooltip, bg="#1E293B", text="#ffff" }) => {
       });
     }
   }, [isHovered]);
-  function handle (){
-    console.log("hello")
+  function handle() {
+    console.log("hello");
   }
   return (
     <>
       <button
-        className={`py-2 px-4 flex justify-center items-center gap-2 bg-[${bg}] text-[${text}] rounded-full text-md font-medium cursor-pointer`}
+        className={`py-2 px-4 flex justify-center items-center gap-2 ${bg} ${text} rounded-full text-md font-medium cursor-pointer`}
+        type={type}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={() => setIsHovered(true)}
