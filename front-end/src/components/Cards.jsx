@@ -38,7 +38,7 @@ const Cards = () => {
     {
       Title: "Wind deg",
       svg: <Wind color="#6366F1"/>,
-      value: "180°",
+      value: "270°",
       subDetail: <Compass/>,
     },
     {
@@ -64,7 +64,7 @@ const Cards = () => {
 
   return (
     <>
-      <div className="w-full flex gap-8 flex-wrap justify-center">
+      <div className="con w-full flex gap-8 flex-wrap justify-center">
         {cards.map((item, index) => (
           <div className="w-[22rem] py-4 px-6 my-2 mx-2 bg-white rounded-md shadow-lg" key={index}>
             <div className="flex justify-between items-center">

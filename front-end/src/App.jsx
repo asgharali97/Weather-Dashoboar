@@ -1,7 +1,6 @@
 import HistoryChart from "./components/HistoryChart";
 import Navbar from "./components/Navbar";
 import LandingPage from "./Pages/LandingPage";
-import Map from "./components/Map";
 import Button from "./components/Button";
 import { Forward } from "lucide-react";
 function App() {
@@ -20,7 +19,6 @@ function App() {
         <Navbar />
         <LandingPage />
         <HistoryChart />
-        <Map />
       </div>
     </>
   );

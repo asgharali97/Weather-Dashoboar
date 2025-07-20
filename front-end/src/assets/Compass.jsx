@@ -1,16 +1,22 @@
-import  { useRef } from "react";
+import { useRef } from "react";
 import { gsap } from "gsap";
-import {useGSAP} from '@gsap/react'
-const Compass = ({ direction = 180 }) => {
-  const needleRef = useRef(null);
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+const Compass = ({ direction = 270 }) => {
+  const needleRef = useRef(null);
+  gsap.registerPlugin(ScrollTrigger);
   useGSAP(() => {
     gsap.to(needleRef.current, {
       rotation: direction,
       transformOrigin: "50% 50%",
-      duration: 1,
-      ease: "power2.out",
-    })
+      duration: 5,
+      ease: "elastic.out(2, 0.3)",
+      scrollTrigger: {
+        trigger: needleRef.current,
+        start: "top 75%",
+      },
+    });
   }, [direction]);
 
   return (
@@ -34,16 +40,16 @@ const Compass = ({ direction = 180 }) => {
         <rect x="146" y="71" width="9" height="8" fill="#6366F1" />
         <rect x="3" y="71" width="9" height="8" fill="#6366F1" />
         <g ref={needleRef}>
-        <path
-          d="M116.5 109L72.0263 86.2783L44 42L88 66.5L116.5 109Z"
-          fill="white"
-        />
-        <path
-          d="M72.0263 86.2783L116.5 109L88 66.5M72.0263 86.2783L44 42L88 66.5M72.0263 86.2783L88 66.5"
-          stroke="#6366F1"
-          strokeWidth="3"
-        />
-        <path d="M116 108L88 67L72 87L116 108Z" fill="#6366F1" />
+          <path
+            d="M116.5 109L72.0263 86.2783L44 42L88 66.5L116.5 109Z"
+            fill="white"
+          />
+          <path
+            d="M72.0263 86.2783L116.5 109L88 66.5M72.0263 86.2783L44 42L88 66.5M72.0263 86.2783L88 66.5"
+            stroke="#6366F1"
+            strokeWidth="3"
+          />
+          <path d="M116 108L88 67L72 87L116 108Z" fill="#6366F1" />
         </g>
       </svg>
     </div>

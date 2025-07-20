@@ -9,6 +9,7 @@ const Button = ({
   tooltip,
   bg = "bg-[#6366f1]",
   text = "text-[#ffff]",
+  ...props
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const tooltipRef = useRef(null);
@@ -23,9 +24,6 @@ const Button = ({
       });
     }
   }, [isHovered]);
-  function handle() {
-    console.log("hello");
-  }
   return (
     <>
       <button
@@ -35,7 +33,7 @@ const Button = ({
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={() => setIsHovered(true)}
         onTouchEnd={() => setIsHovered(false)}
-        onClick={handle}
+        {...props}
       >
         <Icon />
         {content}

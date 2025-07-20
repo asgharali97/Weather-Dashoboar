@@ -2,10 +2,16 @@ import { useState } from "react";
 import loaction from "../assets/location.svg";
 import { Forward } from "lucide-react";
 import Button from "./Button";
+import ShareModal from "./ShareModal";
 const Navbar = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [cityValue, setCityValue] = useState("Karachi");
+  const [showModal, setShowModal] = useState(false);
 
+  const handleBtn = () =>{
+    console.log('click')
+    setShowModal(!showModal)
+  }
   return (
     <>
       <div className="w-full py-3 px-6 shadow-sm ">
@@ -51,11 +57,17 @@ const Navbar = () => {
            content='share'
            Icon={Forward}
            tooltip="share weather"
+           onClick={handleBtn}
            />
           </div>
         </div>
       </div>
       <div className="w-full h-[0.5px] bg-[#3741514f]"></div>
+      {
+        showModal && (
+          <ShareModal showModal={showModal} setShowModal={setShowModal}/>
+        )
+      }
     </>
   );
 };

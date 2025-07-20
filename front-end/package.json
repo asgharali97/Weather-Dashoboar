@@ -15,11 +15,14 @@
     "chart.js": "^4.5.0",
     "gsap": "^3.13.0",
     "leaflet": "^1.9.4",
+    "leaflet-velocity": "^2.1.4",
+    "leaflet.heat": "^0.2.0",
     "lucide-react": "^0.525.0",
     "react": "^19.0.0-rc.1",
     "react-dom": "^19.0.0-rc.1",
     "swiper": "^11.2.10",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "wind-js-leaflet": "^2.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
