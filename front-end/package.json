@@ -22,7 +22,8 @@
     "react-dom": "^19.0.0-rc.1",
     "swiper": "^11.2.10",
     "tailwindcss": "^4.1.11",
-    "wind-js-leaflet": "^2.0.5"
+    "vite-plugin-pwa": "^1.0.2",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

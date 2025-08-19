@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.font-Mozilla{
+    font-family: "Roboto Condensed", sans-serif;
+}

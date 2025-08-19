@@ -3,17 +3,111 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
 import "leaflet-velocity";
+
+// --- Heatmap sample data ---
+let heatData = {
+  points: [
+    [17.0902, -95.7129, 0.6],
+    [17.0902, -95.7139, 0.7],
+    [17.0903, -95.7139, 0.8],
+    [17.0903, -95.7129, 0.9],
+    [17.0904, -95.7128, 0.5],
+    [17.0905, -95.713, 0.6],
+    [17.0906, -95.7132, 0.7],
+    [17.0907, -95.7134, 0.8],
+    [17.0908, -95.7136, 0.9],
+    [17.0909, -95.7138, 1.0],
+    [37.0909, -95.7138, 1.0],
+  ],
+};
+
+// // --- Wind sample data ---
+// let windData = {
+//   header: {
+//     lo1: -96, // left longitude
+//     la1: 38, // top latitude
+//     lo2: -95, // right longitude
+//     la2: 37, // bottom latitude
+//     nx: 10, // number of columns
+//     ny: 10, // number of rows
+//     dx: 0.1, // longitude step
+//     dy: 0.1, // latitude step
+//     parameterNumber: 2,
+//     parameterUnit: "m/s",
+//     refTime: new Date().toISOString(),
+//   },
+//   data: [],
+// };
+
+// // Fill with random wind vectors (u = east/west, v = north/south)
+// for (let i = 0; i < 100; i++) {
+//   const u = Math.random() * 10 - 5; // east/west wind
+//   const v = Math.random() * 10 - 5; // north/south wind
+//   windData.data.push({ u, v });
+// }
+
+// --- Wind sample data ---
+let nx = 10; // cols
+let ny = 10; // rows
+
+let windHeader = {
+  lo1: -96, // left lon
+  la1: 38, // top lat
+  lo2: -95, // right lon
+  la2: 37, // bottom lat
+  nx,
+  ny,
+  dx: 0.1,
+  dy: 0.1,
+  refTime: new Date().toISOString(),
+  parameterUnit: "m/s",
+};
+
+// Fill U and V grids
+let uData = [];
+let vData = [];
+
+for (let j = 0; j < ny; j++) {
+  for (let i = 0; i < nx; i++) {
+    const u = Math.random() * 10 - 5; // east-west
+    const v = Math.random() * 10 - 5; // north-south
+    uData.push(u);
+    vData.push(v);
+  }
+}
+
+// Now build the two datasets
+const uComponent = {
+  header: {
+    ...windHeader,
+    parameterNumber: 2,
+    parameterCategory: 2,
+    parameterNumberName: "U-component_of_wind",
+  },
+  data: uData,
+};
+
+const vComponent = {
+  header: {
+    ...windHeader,
+    parameterNumber: 3,
+    parameterCategory: 2,
+    parameterNumberName: "V-component_of_wind",
+  },
+  data: vData,
+};
+
 const LeafletMap = () => {
-  // console.log(Windy);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
   useEffect(() => {
     const initializeMap = () => {
       if (mapRef.current && L && !mapInstanceRef.current) {
-        const map = L.map(mapRef.current).setView([37.0902, -95.7129], 4);
+        const map = L.map(mapRef.current).setView([37.0902, -95.7129], 8);
 
         mapInstanceRef.current = map;
+
         const osmTileLayer = L.tileLayer(
           "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
           {
@@ -23,38 +117,58 @@ const LeafletMap = () => {
           }
         );
 
-        const googleStreetsTileLayer = L.tileLayer(
-          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-          {
-            maxZoom: 20,
-            subdomains: ["mt0", "mt1", "mt2", "mt3"],
-          }
-        );
-        const baseLayers = {
-          OpenStreetMap: osmTileLayer,
-          "Google Streets": googleStreetsTileLayer,
-        };
-        L.control
-          .layers(baseLayers, {}, { collapsed: false })
-          .addTo(mapInstanceRef.current);
-        osmTileLayer.addTo(mapInstanceRef.current);
-      }
-      const heatLayer = L.heatLayer(
-        [
-          [37.0902, -95.7129],
-          [37.0902, -95.7139],
-          [37.0903, -95.7139],
-          [37.0903, -95.7129],
-          [37.0902, -95.7129],
-        ],
-        {
+        osmTileLayer.addTo(map);
+
+        // ---- Heat Layer ----
+        const heatLayer = L.heatLayer(heatData.points, {
           radius: 50,
           blur: 14,
-          gradient: { 0.2: "blue", 0.5: "lime", 0.8: "red" },
-        }
-      );
-      heatLayer.addTo(mapInstanceRef.current);
-      
+          gradient: {
+            0.2: "blue",
+            0.5: "lime",
+            0.8: "red",
+          },
+        });
+        heatLayer.addTo(map);
+
+        // ---- Wind Layer (Velocity) ----
+        const velocityLayer = L.velocityLayer({
+          displayValues: true,
+          displayOptions: {
+            // label prefix
+            velocityType: "Global Wind",
+
+            // leaflet control position
+            position: "bottomleft",
+
+            // no data at cursor
+            emptyString: "No velocity data",
+
+            // see explanation below
+            angleConvention: "bearingCW",
+
+            // display cardinal direction alongside degrees
+            showCardinal: false,
+
+            // one of: ['ms', 'k/h', 'mph', 'kt']
+            speedUnit: "ms",
+
+            // direction label prefix
+            directionString: "Direction",
+
+            // speed label prefix
+            speedString: "Speed",
+          },
+          data: [uComponent, vComponent], // ✅ structured correctly
+          minVelocity:5,
+          maxVelocity: 60,
+          velocityScale: 0.01,
+          colorScale: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+          opacity:0.5
+        });
+        velocityLayer.addTo(map);
+        
+      }
     };
 
     initializeMap();
