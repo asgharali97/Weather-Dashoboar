@@ -11,10 +11,10 @@ function App() {
 
   useEffect(()=>{
     const weather = async()=>{
-      const geoCode = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=376141b735916255ed517557f3c88463`)
+      const geoCode = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${import.meta.VITE_OWM_KEY}`)
       const geoData = await geoCode.json()
        console.log(geoData[0].lat,geoData[0].lon)
-       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${geoData[0].lat}&lon=${geoData[0].lon}&appid=376141b735916255ed517557f3c88463`)
+       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${geoData[0].lat}&lon=${geoData[0].lon}&appid=${import.meta.VITE_OWM_KEY}`)
        const data = await res.json()
        console.log(data)
     }
