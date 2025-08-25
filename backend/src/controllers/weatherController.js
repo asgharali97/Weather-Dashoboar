@@ -2,8 +2,7 @@ import asyncHandler from "../utils/asynHanlder.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import { currentWeather } from "../services/owmService.js";
-import { weeklyForecast } from "../services/omService.js";
-import { Forecast } from "../utils/omApi.js";
+import { weeklyForecast, hourlyForecast, historyWeather } from "../services/omService.js";
 
 const getCurrentWeather = asyncHandler(async (req, res) => {
   const { city } = req.body;
@@ -41,4 +40,46 @@ const getWeeklyForecast = asyncHandler(async (req, res) => {
     );
 });
 
-export { getCurrentWeather, getWeeklyForecast };
+const getHourlyForecast = asyncHandler(async (req, res) => {
+  const { city } = req.body;
+  console.log(city);
+  if (!city) {
+    throw new ApiError(400, "City is required");
+  }
+
+  const getForecast = await hourlyForecast(city);
+  if (!getForecast) {
+    throw new ApiError(404, "Hourly Forecast not found for the given city");
+  }
+  const data = await getForecast;
+
+
+  res
+    .status(200)
+     .json(
+      new ApiResponse(200, "Weather fetched successfully", data)
+    );
+});
+
+const getHistoryWeather = asyncHandler(async (req, res) => {
+  const { city } = req.body;
+  console.log(city);
+  if (!city) {
+    throw new ApiError(400, "City is required");
+  }
+
+  const getHistory = await historyWeather(city);
+  if (!getHistory) {
+    throw new ApiError(404, "history weather not found for the given city");
+  }
+
+  const data = await getHistory;
+
+  res
+    .status(200)
+     .json(
+      new ApiResponse(200, "Weather fetched successfully", data)
+    );
+});
+
+export { getCurrentWeather, getWeeklyForecast,getHourlyForecast , getHistoryWeather};
