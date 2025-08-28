@@ -4,13 +4,17 @@ import rateLimit from "express-rate-limit";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+  })
+);
 app.use(express.json());
 
 
 const limiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000,
-  max: 15,
+  max: 20,
   message: "Too many requests. Try again tomorrow.",
 });
 

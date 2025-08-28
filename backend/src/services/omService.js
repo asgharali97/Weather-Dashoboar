@@ -10,7 +10,7 @@ function makeCacheKey(type, city) {
 }
 
 const WEATHER_CODE_MAP = {
-  0: { summary: "Clear sky", icon: "clear-day" },
+  0: { summary: "Clear sky", icon: "clear-sky" },
   1: { summary: "Mainly clear", icon: "partly-cloudy" },
   2: { summary: "Partly cloudy", icon: "partly-cloudy" },
   3: { summary: "Overcast", icon: "cloudy" },
@@ -150,9 +150,9 @@ function transformForecast(type,data) {
   });
   return transformedData;
 }
+}
 
-
-function transfromHourlyForecast(data) {
+function transformHourlyData(data) {
   if (!data?.hourly) {
     throw new ApiError(500, "Invalid forecast data structure");
   }
@@ -193,7 +193,7 @@ function transfromHourlyForecast(data) {
 
   return hourlyData;
 }
-}
+
 const weeklyForecast = async (city) => {
   metrics.totalRequests++;
   const key = makeCacheKey("weekly", city);
@@ -238,7 +238,7 @@ const hourlyForecast = async (city) => {
     throw new ApiError(404, "hourly forecast not get for the given city");
   }
   const data = await res.json();
-  const transformedData = transfromHourlyForecast(data);
+  const transformedData = transformHourlyData(data)
   forecastCache.set(key, transformedData);
   return transformedData;
 };

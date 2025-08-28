@@ -12,7 +12,6 @@ const Compass = ({ direction = 270 }) => {
       transformOrigin: "50% 50%",
       duration: 5,
       ease: "elastic.out(2, 0.3)",
-      repeat:-1,
       scrollTrigger: {
         trigger: needleRef.current,
         start: "top 75%",
