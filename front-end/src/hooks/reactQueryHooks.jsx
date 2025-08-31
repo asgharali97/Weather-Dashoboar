@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  airQuality,
   historyWeather,
   hourlyForecast,
   weeklyForecast,
 } from "../api/weatherApi";
 
 const useWeeklyForecast = (city) => {
-   return useQuery({
+  return useQuery({
     queryKey: ["weeklyForecast", city],
     queryFn: () => weeklyForecast(city),
   });
@@ -20,10 +21,22 @@ const useHourlyForecast = (city) => {
 };
 
 const useHistoryWeather = (city) => {
-   return useQuery({
+  return useQuery({
     queryKey: ["historyWeather", city],
     queryFn: () => historyWeather(city),
   });
 };
 
-export { useWeeklyForecast, useHourlyForecast, useHistoryWeather };
+const useAirQuality = (city) => {
+  return useQuery({
+    queryKey: ["airQuality", city],
+    queryFn: () => airQuality(city),
+  });
+};
+
+export {
+  useWeeklyForecast,
+  useHourlyForecast,
+  useHistoryWeather,
+  useAirQuality,
+};

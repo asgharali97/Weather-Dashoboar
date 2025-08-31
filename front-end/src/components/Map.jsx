@@ -102,12 +102,39 @@ const LeafletMap = () => {
   const mapInstanceRef = useRef(null);
 
   useEffect(() => {
+    // add this helper above initializeMap
+async function addRainViewerTile(map) {
+  try {
+    const resp = await fetch("https://api.rainviewer.com/public/weather-maps.json");
+    const manifest = await resp.json();
+    // manifest.radar & .tiles contains frames[]; we take the latest frame (last one)
+    const frames = manifest.radar?.past || manifest.radar?.now?.frames || manifest?.radar?.frames || manifest?.tiles;
+    // more robust approach:
+    const timestamps = manifest?.radar?.past?.map(f => f.time) 
+                    || manifest?.past?.map(f => f.time) 
+                    || (manifest?.radar?.frames?.map(f=>f.time)) 
+                    || manifest?.frames?.map(f=>f.time);
+    const latest = (timestamps && timestamps.length) ? timestamps[timestamps.length - 1] : "now";
+    // If manifest supports "now", you can also use "now" instead of timestamp
+    const tileUrl = `https://tilecache.rainviewer.com/v2/radar/${latest}/{z}/{x}/{y}.png`;
+    // add tile layer
+    L.tileLayer(tileUrl, {
+      attribution: "RainViewer",
+      opacity: 0.55,
+      zIndex: 400
+    }).addTo(map);
+  } catch (err) {
+    console.warn("RainViewer tile add failed:", err.message);
+  }
+}
+
     const initializeMap = () => {
       if (mapRef.current && L && !mapInstanceRef.current) {
         const map = L.map(mapRef.current).setView([37.0902, -95.7129], 8);
 
         mapInstanceRef.current = map;
-
+        
+        addRainViewerTile(map)
         const osmTileLayer = L.tileLayer(
           "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
           {
@@ -116,6 +143,9 @@ const LeafletMap = () => {
             maxZoom: 10,
           }
         );
+        L.tileLayer(
+          "https://api.rainviewer.com/public/weather-maps.json"
+        ).addTo(map);
 
         osmTileLayer.addTo(map);
 
@@ -160,14 +190,13 @@ const LeafletMap = () => {
             speedString: "Speed",
           },
           data: [uComponent, vComponent], // ✅ structured correctly
-          minVelocity:5,
+          minVelocity: 5,
           maxVelocity: 60,
           velocityScale: 0.01,
           colorScale: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
-          opacity:0.5
+          opacity: 0.5,
         });
         velocityLayer.addTo(map);
-        
       }
     };
 

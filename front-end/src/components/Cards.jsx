@@ -9,97 +9,46 @@ import speed from "../assets/speed.svg";
 import airQuality from "../assets/airQuality.svg";
 import Compass from "../assets/compass.jsx";
 import { useWeatherContext } from "../context/WeatherContext.jsx";
-import useCurrentWeather from '../hooks/useCurrentWeather.jsx'
+import useCurrentWeather from "../hooks/useCurrentWeather.jsx";
+import { useAirQuality } from "../hooks/reactQueryHooks.jsx";
 const Cards = () => {
   const { selectedCity } = useWeatherContext();
   const { data, isLoading, isError } = useCurrentWeather(selectedCity);
-
+  const {
+    data: aqiData,
+    isLoading: aqiLoading,
+    isError: aqiError,
+  } = useAirQuality(selectedCity);
   const cards = useMemo(() => {
-    if (isLoading || !data) {
+    if (isLoading || !data || aqiLoading || !aqiData) {
       return [
-        {
-          Title: "UV index",
-          svg: <Sun color="#6366F1" />,
-          value: (
-            <div className="h-6 w-28 bg-gray-300 rounded animate-pulse"></div>
-          ),
-          subDetail: (
-            <div className="h-6 w-20 bg-gray-300 rounded animate-pulse"></div>
-          ),
-        },
-        {
-          Title: "precipitation",
-          svg: precipitation,
-          value: "--- cm",
-          subDetail: "---",
-        },
-        {
-          Title: "Chance of rain",
-          svg: <RainyCloud color="#6366F1" />,
-          value: "---%",
-          subDetail: "---",
-        },
         {
           Title: "Wind deg",
           svg: <Wind color="#6366F1" />,
-          value: "---°",
-          subDetail: (
-            <div className="h-8 w-8 bg-gray-300 rounded-full animate-pulse"></div>
-          ),
+          value: "",
+          subDetail: "",
         },
         {
           Title: "Temp min/max",
           svg: temp,
-          value: "--° / --°",
-          subDetail: "---",
+          value: "",
+          subDetail: "",
         },
         {
           Title: "Pressure",
           svg: speed,
-          value: "--- hPa",
-          subDetail: (
-            <div className="h-6 w-full bg-gray-300 rounded animate-pulse"></div>
-          ),
+          value: "",
+          subDetail: "",
         },
         {
           Title: "Air quality",
           svg: airQuality,
-          value: "---",
-          subDetail: "---",
+          value: "",
+          subDetail: "",
         },
       ];
     }
     return [
-      {
-        Title: "UV index",
-        svg: <Sun color="#6366F1" />,
-        value: "6.3",
-        subDetail: (
-          <ProgressBar
-            progress={6.3}
-            max={11}
-            getAlertText={(value) => {
-              if (value < 3) return "Low";
-              if (value < 6) return "Moderate";
-              if (value < 8) return "High";
-              if (value < 11) return "Very High";
-              return "Extreme";
-            }}
-          />
-        ),
-      },
-      {
-        Title: "precipitation",
-        svg: precipitation,
-        value: "2.5cm ",
-        subDetail: "Moderate",
-      },
-      {
-        Title: "Chance of rain",
-        svg: <RainyCloud color="#6366F1" />,
-        value: "50%",
-        subDetail: "Heavy",
-      },
       {
         Title: "Wind deg",
         svg: <Wind color="#6366F1" />,
@@ -109,9 +58,9 @@ const Cards = () => {
       {
         Title: "Temp min/max",
         svg: temp,
-        value: `${Math.floor(
-          data?.main.temp_min 
-        )}°  ${Math.floor(data?.main.temp_max)}°`,
+        value: `${Math.floor(data?.main.temp_min)}°  ${Math.floor(
+          data?.main.temp_max
+        )}°`,
         subDetail: "Normal",
       },
       {
@@ -129,8 +78,8 @@ const Cards = () => {
       {
         Title: "Air quality",
         svg: airQuality,
-        value: "58",
-        subDetail: "Moderate",
+        value: Math.floor(aqiData?.avgAQI),
+        subDetail: aqiData?.summary,
       },
     ];
   }, [data, isLoading]);
@@ -156,20 +105,32 @@ const Cards = () => {
               )}
             </div>
           </div>
+          {isLoading ? (
+            <div className="flex flex-col justify-center gap-4">
+              <div className="animate-pulse flex justify-center">
+                <div className="h-8 w-16 bg-gray-300 rounded-sm"></div>
+              </div>
+              <div className="animate-pulse flex justify-center">
+                <div className="h-4 w-22 bg-gray-300 rounded-sm"></div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h4 className="text-2xl md:text-3xl font-semibold text-center my-4">
+                {item.value}
+              </h4>
 
-          <h4 className="text-2xl md:text-3xl font-semibold text-center my-4">
-            {item.value}
-          </h4>
-
-          <div className="flex justify-center items-center">
-            {typeof item.subDetail === "string" ? (
-              <span className="text-md md:text-lg text-center">
-                {item.subDetail}
-              </span>
-            ) : (
-              item.subDetail
-            )}
-          </div>
+              <div className="flex justify-center items-center">
+                {typeof item.subDetail === "string" ? (
+                  <span className="text-md md:text-lg text-center">
+                    {item.subDetail}
+                  </span>
+                ) : (
+                  item.subDetail
+                )}
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>

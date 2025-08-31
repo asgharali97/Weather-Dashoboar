@@ -16,21 +16,33 @@ export default defineConfig({
         short_name: "Weatherly",
         start_url: "/",
         display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#0d9488",
+        background_color: "#e7e5e4",
+        theme_color: "#6366f1",
+        color:"#374151",
         icons: [
           {
-            src: "pwa-192x192.png",
+            src: "vite.svg",
             sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "pwa-512x512.png",
-            sizes: "512x512",
             type: "image/png",
           },
         ],
       },
+       screenshots: [
+              {
+                src: '/screenshotDesktop.png',
+                sizes: '1366x768',
+                type: 'image/png', 
+                platform: 'wide', 
+                label: 'PWA Home Screen on Desktop',
+              },
+              {
+                src: '/screenshotMobile.png',
+                sizes: '322x701',
+                type: 'image/png', 
+                platform: 'narrow', 
+                label: 'PWA Home Screen on Mobile',
+              },
+       ],
       workbox: {
         runtimeCaching: [
           {

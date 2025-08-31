@@ -1,43 +1,75 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Thermometer,
-  Droplets,
-  CloudRain,
-  Calendar,
-  TrendingUp,
-} from "lucide-react";
+import { Thermometer, Droplets, TrendingUp, Wind } from "lucide-react";
 import Chart from "chart.js/auto";
+import { useWeatherContext } from "../context/WeatherContext.jsx";
+import { useHistoryWeather } from "../hooks/reactQueryHooks.jsx";
+
+const SkeletonLoader = () => {
+  return (
+    <div className="w-full p-12 bg-[#E7E5E4] text-[#374151]">
+      <div className="w-full bg-white rounded-3xl shadow-lg p-6 sm:p-8">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div>
+              <div className="h-6 bg-gray-200 rounded animate-pulse mb-2 w-40"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-48"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Metric Toggles Skeleton */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-10 bg-gray-200 rounded-lg animate-pulse w-28"
+            ></div>
+          ))}
+        </div>
+
+        {/* Chart Skeleton */}
+        <div className="relative h-80 sm:h-96 md:h-[400px] bg-[#f2f2f19b] rounded-lg p-4">
+          <div className="w-full h-full bg-gray-200 rounded animate-pulse flex items-center justify-center">
+            <div className="text-gray-400">Loading chart...</div>
+          </div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="text-center">
+              <div className="h-8 bg-gray-200 rounded animate-pulse mb-2 mx-auto w-12"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-16"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const HistoryChart = () => {
   const [selectedMetric, setSelectedMetric] = useState("temperature");
-  const [selectedPeriod, setSelectedPeriod] = useState(7);
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+  const { selectedCity } = useWeatherContext();
+  const { data, isLoading, isError } = useHistoryWeather(selectedCity);
 
-  // Dummy weather data for the last 30 days
-  const generateWeatherData = () => {
-    const data = [];
-    const today = new Date();
-
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-
-      data.push({
-        date: date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        temperature: Math.floor(Math.random() * 15) + 20, // 20-35°C
-        humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
-        precipitation: Math.floor(Math.random() * 25), // 0-25mm
-      });
+  // All hooks must be called before any early returns
+  useEffect(() => {
+    // Only create chart if data is available and not loading
+    if (!isLoading && data && data.length > 0) {
+      createChart();
     }
 
-    return data;
-  };
-
-  const weatherData = generateWeatherData();
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, [selectedMetric, data, isLoading]);
 
   const getMetricConfig = (metric) => {
     switch (metric) {
@@ -45,7 +77,7 @@ const HistoryChart = () => {
         return {
           label: "Temperature (°C)",
           icon: <Thermometer className="w-5 h-5" />,
-          color: "#6366F1",
+          color: "#6366f1",
           unit: "°C",
           gradient: "from-indigo-500 to-purple-600",
         };
@@ -53,16 +85,16 @@ const HistoryChart = () => {
         return {
           label: "Humidity (%)",
           icon: <Droplets className="w-5 h-5" />,
-          color: "#3B82F6",
+          color: "#63cbf1",
           unit: "%",
           gradient: "from-blue-500 to-cyan-600",
         };
-      case "precipitation":
+      case "wind": // Fixed case to match button key
         return {
-          label: "Precipitation (mm)",
-          icon: <CloudRain className="w-5 h-5" />,
-          color: "#10B981",
-          unit: "mm",
+          label: "Wind (km/h)",
+          icon: <Wind className="w-5 h-5" />,
+          color: "#1059b9",
+          unit: "km/h",
           gradient: "from-emerald-500 to-teal-600",
         };
       default:
@@ -77,15 +109,15 @@ const HistoryChart = () => {
   };
 
   const createChart = () => {
+    if (!chartRef.current || !data || data.length === 0) return;
+
     if (chartInstance.current) {
       chartInstance.current.destroy();
     }
 
     const ctx = chartRef.current.getContext("2d");
     const config = getMetricConfig(selectedMetric);
-    const filteredData = weatherData.slice(-selectedPeriod);
 
-    // Create gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, config.color + "40");
     gradient.addColorStop(1, config.color + "00");
@@ -93,11 +125,16 @@ const HistoryChart = () => {
     chartInstance.current = new Chart(ctx, {
       type: "line",
       data: {
-        labels: filteredData.map((item) => item.date),
+        labels: data?.map((item) =>
+          new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+          }).format(new Date(item.date))
+        ),
         datasets: [
           {
             label: config.label,
-            data: filteredData.map((item) => item[selectedMetric]),
+            data: data?.map((item) => item[selectedMetric]),
             borderColor: config.color,
             backgroundColor: gradient,
             borderWidth: 3,
@@ -174,15 +211,6 @@ const HistoryChart = () => {
     });
   };
 
-  useEffect(() => {
-    createChart();
-    return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
-    };
-  }, [selectedMetric, selectedPeriod]);
-
   const metrics = [
     {
       key: "temperature",
@@ -195,27 +223,46 @@ const HistoryChart = () => {
       icon: <Droplets className="w-4 h-4" />,
     },
     {
-      key: "precipitation",
-      label: "Precipitation",
-      icon: <CloudRain className="w-4 h-4" />,
+      key: "wind",
+      label: "Wind",
+      icon: <Wind className="w-4 h-4" />,
     },
   ];
 
-  const periods = [
-    { value: 7, label: "7 Days" },
-    { value: 30, label: "30 Days" },
-  ];
-
   const currentConfig = getMetricConfig(selectedMetric);
+
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
+
+  if (isError) {
+    return (
+      <div className="w-full p-12 bg-[#E7E5E4] text-[#374151]">
+        <div className="w-full bg-white rounded-xl shadow-lg p-6 sm:p-8 text-center">
+          <div className="text-[#bf1a1a] text-lg">
+            Error loading weather history data
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full p-12 bg-[#E7E5E4] text-[#374151]">
+        <div className="w-full bg-white rounded-3xl shadow-lg p-6 sm:p-8 text-center">
+          <div className="text-lg">No weather history data available</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full p-12 bg-[#E7E5E4] text-[#374151]">
       <div className="w-full bg-white rounded-3xl shadow-lg p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <div
-              className={`p-2 rounded-lg bg-gradient-to-r ${currentConfig.gradient}`}
-            >
+            <div className="p-2 rounded-lg bg-[#6366f1]">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -227,26 +274,8 @@ const HistoryChart = () => {
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2 bg-[#e7e5e4] p-1 rounded-lg">
-            <Calendar className="w-4 h-4 text-[#374151]" />
-            {periods.map((period) => (
-              <button
-                key={period.value}
-                onClick={() => setSelectedPeriod(period.value)}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 cursor-pointer ${
-                  selectedPeriod === period.value
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
-              >
-                {period.label}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Metric Toggles */}
         <div className="flex flex-wrap gap-2 mb-6">
           {metrics.map((metric) => (
             <button
@@ -254,7 +283,7 @@ const HistoryChart = () => {
               onClick={() => setSelectedMetric(metric.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
                 selectedMetric === metric.key
-                  ? "bg-indigo-600 text-white shadow-md"
+                  ? "bg-[#6366f1] text-white shadow-md"
                   : "bg-gray-100  hover:bg-gray-200"
               }`}
             >
@@ -263,23 +292,51 @@ const HistoryChart = () => {
             </button>
           ))}
         </div>
-
-        {/* Chart Container */}
         <div className="relative h-80 sm:h-96 md:h-[400px] bg-[#f2f2f19b] rounded-lg p-4">
           <canvas ref={chartRef} />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
           <div className="text-center">
-            <div className="text-2xl font-bold">25°</div>
+            <div className="text-2xl font-bold">
+              {(
+                data.reduce((acc, item) => acc + item[selectedMetric], 0) /
+                data.length
+              ).toFixed(1)}
+              {selectedMetric === "temperature"
+                ? "°"
+                : selectedMetric === "wind"
+                ? " km/h"
+                : selectedMetric === "humidity"
+                ? "%" 
+                : ""}
+            </div>
             <div className="text-sm text-gray-500">Average</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold">29°</div>
+            <div className="text-2xl font-bold">
+              {Math.max(...data.map((item) => item[selectedMetric]))}
+              {selectedMetric === "temperature"
+                ? "°"
+                : selectedMetric === "wind"
+                ? " km/h"
+                : selectedMetric === "humidity"
+                ? "%"
+                : ""}
+            </div>
             <div className="text-sm text-gray-500">Maximum</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold">24°</div>
-            <div className="text-sm text-gray-500">Maximum</div>
+            <div className="text-2xl font-bold">
+              {data.length > 1 ? Math.min(...data.slice(0, -1).map((item) => item[selectedMetric])) : data[0][selectedMetric]}
+                {selectedMetric === "temperature"
+                ? "°"
+                : selectedMetric === "wind"
+                ? " km/h"
+                : selectedMetric === "humidity"
+                ? "%"
+                : ""}
+              </div>
+            <div className="text-sm text-gray-500">Minimum</div>
           </div>
         </div>
       </div>

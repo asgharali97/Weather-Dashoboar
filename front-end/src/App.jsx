@@ -63,9 +63,10 @@ function App() {
               </div>
             </div>
             <Navbar />
+            <main>
             <LandingPage />
             <HistoryChart />
-            <Map />
+            </main>
           </div>
         </WeatherContextProvider>
       </QueryClientProvider>

@@ -3,15 +3,20 @@ import loaction from "../assets/location.svg";
 import { Forward } from "lucide-react";
 import Button from "./Button";
 import ShareModal from "./ShareModal";
-import { currentWeather } from "../api/weatherApi.js";
 import { useWeatherContext } from "../context/WeatherContext.jsx";
+
 const Navbar = () => {
-  const { setCurrentWeather, selectedCity, setSelectedCity } = useWeatherContext();
+  const { selectedCity, setSelectedCity } = useWeatherContext();
   const [isEditable, setIsEditable] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [inputValue, setInputValue] = useState(selectedCity);
 
   useEffect(() => {
     localStorage.setItem("city", selectedCity);
+  }, [selectedCity]);
+
+  useEffect(() => {
+    setInputValue(selectedCity);
   }, [selectedCity]);
 
   const handleBtn = () => {
@@ -21,28 +26,24 @@ const Navbar = () => {
   const handleKey = async (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      setSelectedCity (selectedCity);
+      setSelectedCity(inputValue.trim());
       setIsEditable(false);
-      const data = await currentWeather(selectedCity);
-      console.log(data.data);
-      setCurrentWeather(data.data.data);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await currentWeather(selectedCity);
-      console.log(data);
-      if (data.data) {
-        setCurrentWeather(data.data.data);
-      }
-    };
-    fetchData();
-  }, []);
+  const handleEditClick = () => {
+    setIsEditable(true);
+    setInputValue(selectedCity);
+  };
+
+  const handleBlur = () => {
+    setIsEditable(false);
+    setInputValue(selectedCity);
+  };
 
   return (
     <>
-      <div className="w-full py-3 px-6 shadow-sm ">
+      <nav className="w-full py-3 px-6 shadow-sm ">
         <div className="relative flex items-center justify-between">
           <div className="text-2xl font-bold w-0">
             <svg className="w-20 h-12">
@@ -83,9 +84,9 @@ const Navbar = () => {
                   type="text"
                   placeholder="Enter Your City Name"
                   className="py-1 pl-[3rem] pr-4 rounded-lg border border-[#828282] outline-none w-[10rem] sm:w-[15rem] md:w-[20rem] focus:border-[#6B7280]"
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity (e.target.value)}
-                  onBlur={() => setIsEditable(false)}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)} 
+                  onBlur={handleBlur}
                   onKeyDown={(e) => handleKey(e)}
                   autoFocus
                 />
@@ -98,15 +99,18 @@ const Navbar = () => {
               </div>
             ) : (
               <div
-                onClick={() => setIsEditable(true)}
-                className="flex items-center gap-4 cursor-pointer"
+                role="button"
+                aria-label="edit city"
+                tabIndex={0}
+                onClick={handleEditClick}
+                className="flex items-center gap-4 cursor-pointer outline-none focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
               >
                 <img
                   src={loaction}
                   alt="location"
                   className="w-5 h-5 sm:w-6 sm:h-6"
                 />
-                <h4 className="text-md md:text-lg font-bold cursor-pointer">
+                <h4 className="text-md md:text-lg font-bold">
                   {selectedCity ? selectedCity : "Karachi"}
                 </h4>
               </div>
@@ -121,7 +125,7 @@ const Navbar = () => {
             />
           </div>
         </div>
-      </div>
+      </nav>
       <div className="w-full h-[0.5px] bg-[#3741514f]"></div>
       {showModal && (
         <ShareModal showModal={showModal} setShowModal={setShowModal} />

@@ -2,7 +2,7 @@ import asyncHandler from "../utils/asynHanlder.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import { currentWeather } from "../services/owmService.js";
-import { weeklyForecast, hourlyForecast, historyWeather } from "../services/omService.js";
+import { weeklyForecast, hourlyForecast, historyWeather, airQuality } from "../services/omService.js";
 
 const getCurrentWeather = asyncHandler(async (req, res) => {
   const { city } = req.body;
@@ -82,4 +82,25 @@ const getHistoryWeather = asyncHandler(async (req, res) => {
     );
 });
 
-export { getCurrentWeather, getWeeklyForecast,getHourlyForecast , getHistoryWeather};
+const getAirQuality = asyncHandler(async (req, res) => {
+  const { city } = req.body;
+  console.log(city);
+  if (!city) {
+    throw new ApiError(400, "City is required");
+  }
+
+  const getAQI = await airQuality(city);
+  if (!getAQI) {
+    throw new ApiError(404, "Air Quality not found for the given city");
+  }
+
+  const data = await getAQI;
+
+  res
+    .status(200)
+     .json(
+      new ApiResponse(200, "Weather fetched successfully", data)
+    );
+});
+
+export { getCurrentWeather, getWeeklyForecast,getHourlyForecast , getHistoryWeather,getAirQuality};

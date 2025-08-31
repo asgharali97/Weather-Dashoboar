@@ -59,7 +59,7 @@ function getMode(arr) {
   return mode;
 }
 
-function transformForecast(type,data) {
+function transformForecast(type, data) {
   if (!data?.hourly) {
     throw new ApiError(500, "Invalid forecast data structure");
   }
@@ -90,66 +90,66 @@ function transformForecast(type,data) {
 
   hourly.time.forEach((time, i) => {
     const date = time.split("T")[0];
-    if(type==="weekly"){
-    if (!dailyData[date]) {
-      dailyData[date] = {
-        temps: [],
-        winds: [],
-        humidity: [],
-        weatherCodes: [],
-      };
-    }
+    if (type === "weekly") {
+      if (!dailyData[date]) {
+        dailyData[date] = {
+          temps: [],
+          winds: [],
+          humidity: [],
+          weatherCodes: [],
+        };
+      }
 
-    dailyData[date].temps.push(hourly.temperature_2m[i]);
-    dailyData[date].winds.push(hourly.wind_speed_10m[i]);
-    dailyData[date].humidity.push(hourly.relative_humidity_2m[i]);
-    dailyData[date].weatherCodes.push(hourly.weathercode[i]);
-  }else{
-    if (!dailyData[date]) {
-      dailyData[date] = {
-        temps: [],
-        winds: [],
-        humidity: [],
-      };
+      dailyData[date].temps.push(hourly.temperature_2m[i]);
+      dailyData[date].winds.push(hourly.wind_speed_10m[i]);
+      dailyData[date].humidity.push(hourly.relative_humidity_2m[i]);
+      dailyData[date].weatherCodes.push(hourly.weathercode[i]);
+    } else {
+      if (!dailyData[date]) {
+        dailyData[date] = {
+          temps: [],
+          winds: [],
+          humidity: [],
+        };
+      }
+      dailyData[date].temps.push(hourly.temperature_2m[i]);
+      dailyData[date].winds.push(hourly.wind_speed_10m[i]);
+      dailyData[date].humidity.push(hourly.relative_humidity_2m[i]);
     }
-    dailyData[date].temps.push(hourly.temperature_2m[i]);
-    dailyData[date].winds.push(hourly.wind_speed_10m[i]);
-    dailyData[date].humidity.push(hourly.relative_humidity_2m[i]);
+  });
+  if (type === "weekly") {
+    const transformedData = Object.entries(dailyData).map(([date, values]) => {
+      const repCode = getMode(values.weatherCodes);
+      const meta =
+        typeof WEATHER_CODE_MAP !== "undefined" && WEATHER_CODE_MAP[repCode]
+          ? WEATHER_CODE_MAP[repCode]
+          : { summary: "Mixed/Unknown", icon: "na" };
+
+      return {
+        date,
+        maxTemp: Math.max(...values.temps),
+        minTemp: Math.min(...values.temps),
+        maxWind: Math.max(...values.winds),
+        minWind: Math.min(...values.winds),
+        maxHumidity: Math.max(...values.humidity),
+        minHumidity: Math.min(...values.humidity),
+        weatherCode: repCode,
+        weatherSummary: meta.summary,
+        weatherIcon: meta.icon,
+      };
+    });
+    return transformedData;
+  } else {
+    const transformedData = Object.entries(dailyData).map(([date, values]) => {
+      return {
+        date,
+        temperature: Math.max(...values.temps),
+        wind: Math.max(...values.winds),
+        humidity: Math.max(...values.humidity),
+      };
+    });
+    return transformedData;
   }
-});
-  if(type === 'weekly'){
-  const transformedData = Object.entries(dailyData).map(([date, values]) => {
-    const repCode = getMode(values.weatherCodes);
-    const meta =
-      typeof WEATHER_CODE_MAP !== "undefined" && WEATHER_CODE_MAP[repCode]
-        ? WEATHER_CODE_MAP[repCode]
-        : { summary: "Mixed/Unknown", icon: "na" };
-
-    return {
-      date,
-      maxTemp: Math.max(...values.temps),
-      minTemp: Math.min(...values.temps),
-      maxWind: Math.max(...values.winds),
-      minWind: Math.min(...values.winds),
-      maxHumidity: Math.max(...values.humidity),
-      minHumidity: Math.min(...values.humidity),
-      weatherCode: repCode,
-      weatherSummary: meta.summary,
-      weatherIcon: meta.icon,
-    };
-  });
-  return transformedData;
-}else{
-  const transformedData = Object.entries(dailyData).map(([date, values]) => {
-    return {
-      date,
-      maxTemp: Math.max(...values.temps),
-      maxWind: Math.max(...values.winds),
-      maxHumidity: Math.max(...values.humidity),
-    };
-  });
-  return transformedData;
-}
 }
 
 function transformHourlyData(data) {
@@ -194,17 +194,26 @@ function transformHourlyData(data) {
   return hourlyData;
 }
 
+function getAQIDescription(value) {
+  if (value <= 20) return "Excellent";
+  if (value <= 40) return "Good";
+  if (value <= 60) return "Moderate";
+  if (value <= 80) return "Poor";
+  if (value <= 100) return "Very Poor";
+  return "Hazardous";
+}
+
 const weeklyForecast = async (city) => {
   metrics.totalRequests++;
   const key = makeCacheKey("weekly", city);
-  if (forecastCache.has(key)){
+  if (forecastCache.has(key)) {
     metrics.cacheHits++;
     return forecastCache.get(key);
   }
 
   metrics.cacheMisses++;
   const { lat, lon } = await getCoords(city);
-  
+
   const res = await fetch(
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode&forecast_days=7&timezone=auto`
   );
@@ -214,7 +223,7 @@ const weeklyForecast = async (city) => {
     throw new ApiError(404, "forecast not get for the given city");
   }
   const data = await res.json();
-  const transformedData = transformForecast("weekly",data);
+  const transformedData = transformForecast("weekly", data);
   forecastCache.set(key, transformedData);
   return transformedData;
 };
@@ -222,10 +231,10 @@ const weeklyForecast = async (city) => {
 const hourlyForecast = async (city) => {
   metrics.totalRequests++;
   const key = makeCacheKey("hourly", city);
-  if (forecastCache.has(key)){
-     metrics.cacheHits++;
+  if (forecastCache.has(key)) {
+    metrics.cacheHits++;
     return forecastCache.get(key);
-    }
+  }
   metrics.cacheMisses++;
   const { lat, lon } = await getCoords(city);
 
@@ -238,7 +247,7 @@ const hourlyForecast = async (city) => {
     throw new ApiError(404, "hourly forecast not get for the given city");
   }
   const data = await res.json();
-  const transformedData = transformHourlyData(data)
+  const transformedData = transformHourlyData(data);
   forecastCache.set(key, transformedData);
   return transformedData;
 };
@@ -246,15 +255,15 @@ const hourlyForecast = async (city) => {
 const historyWeather = async (city) => {
   metrics.totalRequests++;
   const key = makeCacheKey("history", city);
-  if (forecastCache.has(key)){ 
+  if (forecastCache.has(key)) {
     metrics.cacheHits++;
     return forecastCache.get(key);
   }
   metrics.cacheMisses++;
-  const start = new Date()
+  const start = new Date();
   start.setDate(start.getDate() - 30);
   const startDate = start.toISOString().split("T")[0];
-  const end = new Date().toISOString().split("T")[0]
+  const end = new Date().toISOString().split("T")[0];
   const { lat, lon } = await getCoords(city);
   const res = await fetch(
     `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${startDate}&end_date=${end}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`
@@ -266,10 +275,38 @@ const historyWeather = async (city) => {
   }
 
   const data = await res.json();
-  const transformedData = transformForecast("history",data);
-  console.log("data ::", transformedData);
+  const transformedData = transformForecast("history", data);
   forecastCache.set(key, transformedData);
-  return data;
+  return transformedData;
 };
 
-export { weeklyForecast, hourlyForecast, historyWeather };
+const airQuality = async (city) => {
+  metrics.totalRequests++;
+  const key = makeCacheKey("airQuality", city);
+  if (forecastCache.has(key)) {
+    metrics.cacheHits++;
+    return forecastCache.get(key);
+  }
+  metrics.cacheMisses++;
+  const { lat, lon } = await getCoords(city);
+  const res = await fetch(
+    `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=european_aqi&forecast_days=1`
+  );
+  metrics.externalApiCalls++;
+
+  if (!res) {
+    throw new ApiError(404, "airQuality not get for the given city");
+  }
+  const data = await res.json();
+  const avgAQI =data.hourly?.european_aqi?.reduce((acc, curr) => acc + curr, 0) / data.hourly?.european_aqi.length;
+  const transformedData = {
+    avgAQI,
+    maxAQI: Math.max(...data.hourly?.european_aqi),
+    minAQI: Math.min(...data.hourly?.european_aqi),
+    summary: getAQIDescription(avgAQI),
+  };
+  forecastCache.set(key, transformedData);
+  return transformedData;
+};
+
+export { weeklyForecast, hourlyForecast, historyWeather, airQuality };

@@ -1,11 +1,12 @@
 import express from 'express'
-import { getCurrentWeather, getWeeklyForecast, getHourlyForecast, getHistoryWeather } from '../controllers/weatherController.js'
-
+import { getCurrentWeather, getWeeklyForecast, getHourlyForecast, getHistoryWeather, getAirQuality } from '../controllers/weatherController.js'
+import {externalApiLimiter} from '../middleware/rateLimiter.Middleware.js'
 const router = express.Router();
 
-router.route('/').post(getCurrentWeather)
-router.route('/weekly-forecast').post(getWeeklyForecast);
-router.route('/hourly-forecast').post(getHourlyForecast);
-router.route('/history').post(getHistoryWeather);
+router.route('/').post(externalApiLimiter,getCurrentWeather)
+router.route('/weekly-forecast').post(externalApiLimiter,getWeeklyForecast);
+router.route('/hourly-forecast').post(externalApiLimiter,getHourlyForecast);
+router.route('/history').post(externalApiLimiter,getHistoryWeather);
+router.route('/air-quality').post(externalApiLimiter,getAirQuality);
 
 export default router

@@ -13,7 +13,6 @@ import RainyCloud from "../assets/RainyCloud.jsx";
 import PartlyCloudy from "../assets/PartlyCloudy.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { use } from "react";
 const Forecast = () => {
   const [forecast, setForecast] = useState(false);
   const { selectedCity } = useWeatherContext();
@@ -28,6 +27,7 @@ const Forecast = () => {
     isError: hourlyError,
   } = useHourlyForecast(selectedCity);
 
+    if(weeklyError || hourlyError) return <div>Got the Erro while getting forecast wait for while and try again</div>
   const ForecastSkeleton = () => (
     <div className="flex flex-col items-center gap-4">
       <div className="animate-pulse">
@@ -95,7 +95,7 @@ const Forecast = () => {
             className="mt-8 "
             style={{ padding: "1rem 0 1rem 1rem" }}
           >
-            {weeklyLoading && hourlyLoading
+            {(weeklyLoading && hourlyLoading)
               ? Array.from({ length: 7 }).map((_, index) => (
                   <SwiperSlide key={index} style={{ width: "auto" }}>
                     <div className="w-36 bg-[#E5E5F2] text-[#1E293B] rounded-md py-4 px-2 flex flex-col justify-center items-center gap-2 shadow-md cursor-pointer hover:scale-105 transition-all">
@@ -135,7 +135,7 @@ const Forecast = () => {
                     </SwiperSlide>
                   );
                 })
-              : weeklyData.map((item, index) => {
+              : weeklyData?.map((item, index) => {
                   const icon = iconList(item.weatherIcon);
                   return (
                     <SwiperSlide key={index} style={{ width: "auto" }}>

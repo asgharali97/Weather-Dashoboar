@@ -7,23 +7,11 @@ const WeatherContextProvider = ({ children }) => {
     () => localStorage.getItem("city") || "Karachi"
   );
 
-  const [currentWeather, setCurrentWeather] = useState([]);
-  const [weeklyForecast, setWeeklyForecast] = useState([]);
-  const [hourlyForecast, setHourlyForecast] = useState([]);
-  const [historyWeather, setHistoryWeather] = useState([]);
   return (
     <WeatherContext.Provider
       value={{
         selectedCity,
         setSelectedCity,
-        currentWeather,
-        setCurrentWeather,
-        weeklyForecast,
-        setWeeklyForecast,
-        hourlyForecast,
-        setHourlyForecast,
-        historyWeather,
-        setHistoryWeather,
       }}
     >
       {children}
