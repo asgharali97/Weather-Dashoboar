@@ -82,7 +82,7 @@ const Cards = () => {
         subDetail: aqiData?.summary,
       },
     ];
-  }, [data, isLoading]);
+  }, [data, isLoading,aqiLoading,aqiData]);
 
   return (
     <div className="con w-full flex gap-8 flex-wrap justify-center">
@@ -105,7 +105,7 @@ const Cards = () => {
               )}
             </div>
           </div>
-          {isLoading ? (
+          {isLoading && aqiLoading ? (
             <div className="flex flex-col justify-center gap-4">
               <div className="animate-pulse flex justify-center">
                 <div className="h-8 w-16 bg-gray-300 rounded-sm"></div>

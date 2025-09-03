@@ -21,6 +21,7 @@ const Forecast = () => {
     isLoading: weeklyLoading,
     isError: weeklyError,
   } = useWeeklyForecast(selectedCity);
+  console.log(weeklyData)
   const {
     data: hourlyData,
     isLoading: hourlyLoading,
@@ -78,16 +79,21 @@ const Forecast = () => {
     <>
       <div className="w-full py-12 mt-8">
         <div className="w-full bg-white rounded-md shadow-md p-8 ">
-          <div className="flex flex-col sm:flex-row justify-between">
-            <h4 className="text-xl font-bold sm:font-medium text-center sm:text-start mb-4">
-              {forecast ? "7 Hourly forecast" : "7 day forecast"}
+          <div className="flex flex-col xs:flex-row items-center xs:justify-between xs:items-unset">
+            <div>
+            <h4 className="text-[1.5rem] md:text-xl font-bold sm:font-medium sm:text-start mb-4">
+              {forecast ? "Hourly forecast" : "Day forecast"}
             </h4>
+            </div>
+            <div>
+
             <button
-              className="py-2 px-4 rounded-full bg-[#6366F1] text-white text-md font-medium cursor-pointer hover:bg-[#4F46E5] hover:shadow-md"
+              className="py-2 px-5 sm:px-4 w-[9rem] xs:w-[10rem] rounded-full bg-[#6366F1] text-white sm:text-md font-medium cursor-pointer hover:bg-[#4F46E5] hover:shadow-md flex justify-center"
               onClick={() => setForecast(!forecast)}
-            >
+              >
               {forecast ? "day forecast" : "Hourly forecast"}
             </button>
+            </div>
           </div>
           <Swiper
             spaceBetween={16}
@@ -104,7 +110,7 @@ const Forecast = () => {
                   </SwiperSlide>
                 ))
               : forecast
-              ? hourlyData.map((item, index) => {
+              ? hourlyData?.map((item, index) => {
                   const icon = iconList(item.weatherIcon);
                   return (
                     <SwiperSlide key={index} style={{ width: "auto" }}>

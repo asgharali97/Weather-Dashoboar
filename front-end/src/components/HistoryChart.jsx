@@ -57,9 +57,7 @@ const HistoryChart = () => {
   const { selectedCity } = useWeatherContext();
   const { data, isLoading, isError } = useHistoryWeather(selectedCity);
 
-  // All hooks must be called before any early returns
   useEffect(() => {
-    // Only create chart if data is available and not loading
     if (!isLoading && data && data.length > 0) {
       createChart();
     }
@@ -89,7 +87,7 @@ const HistoryChart = () => {
           unit: "%",
           gradient: "from-blue-500 to-cyan-600",
         };
-      case "wind": // Fixed case to match button key
+      case "wind":
         return {
           label: "Wind (km/h)",
           icon: <Wind className="w-5 h-5" />,
@@ -154,6 +152,12 @@ const HistoryChart = () => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: {
+              left: 10,
+              right: 10,
+            },
+          },
         plugins: {
           legend: {
             display: false,
@@ -184,6 +188,9 @@ const HistoryChart = () => {
               font: {
                 size: 12,
               },
+              maxTicksLimit: 12,
+              minRotation: 0,
+              maxRotation: 0,
             },
           },
           y: {
@@ -229,8 +236,6 @@ const HistoryChart = () => {
     },
   ];
 
-  const currentConfig = getMetricConfig(selectedMetric);
-
   if (isLoading) {
     return <SkeletonLoader />;
   }
@@ -258,7 +263,7 @@ const HistoryChart = () => {
   }
 
   return (
-    <div className="w-full p-12 bg-[#E7E5E4] text-[#374151]">
+    <div className="w-full py-12 px-12  bg-[#E7E5E4] text-[#374151]">
       <div className="w-full bg-white rounded-3xl shadow-lg p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex items-center gap-3">
@@ -293,9 +298,13 @@ const HistoryChart = () => {
           ))}
         </div>
         <div className="relative h-80 sm:h-96 md:h-[400px] bg-[#f2f2f19b] rounded-lg p-4">
-          <canvas ref={chartRef} />
+          <div className="overflow-x-auto min-w-full">
+            <div className="min-w-[600px] h-80 sm:h-96 md:h-[400px]">
+              <canvas ref={chartRef} />
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 justify-center">
           <div className="text-center">
             <div className="text-2xl font-bold">
               {(
@@ -307,7 +316,7 @@ const HistoryChart = () => {
                 : selectedMetric === "wind"
                 ? " km/h"
                 : selectedMetric === "humidity"
-                ? "%" 
+                ? "%"
                 : ""}
             </div>
             <div className="text-sm text-gray-500">Average</div>
@@ -327,15 +336,19 @@ const HistoryChart = () => {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {data.length > 1 ? Math.min(...data.slice(0, -1).map((item) => item[selectedMetric])) : data[0][selectedMetric]}
-                {selectedMetric === "temperature"
+              {data.length > 1
+                ? Math.min(
+                    ...data.slice(0, -1).map((item) => item[selectedMetric])
+                  )
+                : data[0][selectedMetric]}
+              {selectedMetric === "temperature"
                 ? "°"
                 : selectedMetric === "wind"
                 ? " km/h"
                 : selectedMetric === "humidity"
                 ? "%"
                 : ""}
-              </div>
+            </div>
             <div className="text-sm text-gray-500">Minimum</div>
           </div>
         </div>

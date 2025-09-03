@@ -3,3 +3,7 @@
 .font-Mozilla{
     font-family: "Roboto Condensed", sans-serif;
 }
+
+@theme {
+      --breakpoint-xs: 530px; 
+    }
