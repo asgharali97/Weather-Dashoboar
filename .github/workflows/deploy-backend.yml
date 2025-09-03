@@ -1,0 +1,44 @@
+name: Backend – Railway Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: backend-${{ github.ref }}
+      cancel-in-progress: true
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@latest
+
+      - name: Link Railway project/service
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway link \
+            --project ${{ secrets.RAILWAY_PROJECT_ID }} \
+            --service "${{ secrets.RAILWAY_SERVICE }}" \
+            --environment "${{ secrets.RAILWAY_ENVIRONMENT }}"
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --ci
