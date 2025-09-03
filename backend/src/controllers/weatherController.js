@@ -42,7 +42,6 @@ const getWeeklyForecast = asyncHandler(async (req, res) => {
 
 const getHourlyForecast = asyncHandler(async (req, res) => {
   const { city } = req.body;
-  console.log(city);
   if (!city) {
     throw new ApiError(400, "City is required");
   }
