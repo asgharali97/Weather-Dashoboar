@@ -11,6 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: weatherly
     concurrency:
       group: backend-${{ github.ref }}
       cancel-in-progress: true

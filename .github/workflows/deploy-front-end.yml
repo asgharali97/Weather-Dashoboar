@@ -18,6 +18,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: weatherly
     concurrency:
       group: frontend-${{ github.ref }}
       cancel-in-progress: true
