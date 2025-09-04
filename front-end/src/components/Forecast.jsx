@@ -4,7 +4,7 @@ import {
   useWeeklyForecast,
   useHourlyForecast,
 } from "../hooks/reactQueryHooks";
-import Sun from "../assets/sun";
+import Sun from "../assets/Sun";
 import fog from "../assets/fog.svg";
 import snow from "../assets/snow.svg";
 import thunderstorm from "../assets/thunderstorm.svg";
