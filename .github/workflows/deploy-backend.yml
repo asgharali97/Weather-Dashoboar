@@ -25,7 +25,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm install
+          
       - name: Install Railway CLI
         run: npm i -g @railway/cli@latest
 
