@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Thermometer, Droplets, TrendingUp, Wind } from "lucide-react";
 import Chart from "chart.js/auto";
-import { useWeatherContext } from "../context/WeatherContext.jsx";
-import { useHistoryWeather } from "../hooks/reactQueryHooks.jsx";
+import { useWeatherContext } from "../context/WeatherContext";
+import { useHistoryWeather } from "../hooks/reactQueryHooks";
 
 const SkeletonLoader = () => {
   return (

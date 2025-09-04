@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import loaction from "../assets/location.svg";
-import { Forward } from "lucide-react";
-import Button from "./Button";
-import ShareModal from "./ShareModal";
-import { useWeatherContext } from "../context/WeatherContext.jsx";
+import { useWeatherContext } from "../context/WeatherContext";
 
 const Navbar = () => {
   const { selectedCity, setSelectedCity } = useWeatherContext();
   const [isEditable, setIsEditable] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [inputValue, setInputValue] = useState(selectedCity);
   const [isHover, setIsHover] = useState(false);
   const inputRef = useRef(null);
@@ -20,10 +16,6 @@ const Navbar = () => {
   useEffect(() => {
     setInputValue(selectedCity);
   }, [selectedCity]);
-
-  const handleBtn = () => {
-    setShowModal(!showModal);
-  };
 
   const handleKey = async (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -144,20 +136,8 @@ const Navbar = () => {
               </div>
             )}
           </div>
-          <div className="relative md:block hidden">
-            <Button
-              content="share"
-              Icon={Forward}
-              tooltip="share weather"
-              onClick={handleBtn}
-            />
-          </div>
         </div>
       </nav>
-      <div className="w-full h-[0.5px] bg-[#3741514f]"></div>
-      {showModal && (
-        <ShareModal showModal={showModal} setShowModal={setShowModal} />
-      )}
     </>
   );
 };

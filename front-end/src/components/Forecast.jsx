@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { useWeatherContext } from "../context/WeatherContext.jsx";
+import { useWeatherContext } from "../context/WeatherContext";
 import {
   useWeeklyForecast,
   useHourlyForecast,
-} from "../hooks/reactQueryHooks.jsx";
-import Sun from "../assets/Sun.jsx";
+} from "../hooks/reactQueryHooks";
+import Sun from "../assets/sun";
 import fog from "../assets/fog.svg";
 import snow from "../assets/snow.svg";
 import thunderstorm from "../assets/thunderstorm.svg";
 import cloudy from "../assets/cloudy.svg";
-import RainyCloud from "../assets/RainyCloud.jsx";
+import RainyCloud from "../assets/RainyCloud";
 import PartlyCloudy from "../assets/PartlyCloudy.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";

@@ -1,16 +1,13 @@
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import ProgressBar from "./ProgressBar";
-import Sun from "../assets/Sun.jsx";
-import precipitation from "../assets/precipitation.svg";
-import RainyCloud from "../assets/RainyCloud.jsx";
-import Wind from "../assets/wind.jsx";
+import Wind from "../assets/wind";
 import temp from "../assets/temp.svg";
 import speed from "../assets/speed.svg";
 import airQuality from "../assets/airQuality.svg";
-import Compass from "../assets/compass.jsx";
-import { useWeatherContext } from "../context/WeatherContext.jsx";
-import useCurrentWeather from "../hooks/useCurrentWeather.jsx";
-import { useAirQuality } from "../hooks/reactQueryHooks.jsx";
+import Compass from "../assets/compass";
+import { useWeatherContext } from "../context/WeatherContext";
+import useCurrentWeather from "../hooks/useCurrentWeather";
+import { useAirQuality } from "../hooks/reactQueryHooks";
 const Cards = () => {
   const { selectedCity } = useWeatherContext();
   const { data, isLoading, isError } = useCurrentWeather(selectedCity);

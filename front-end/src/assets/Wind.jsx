@@ -1,5 +1,4 @@
 const Wind = ({ color = "#1E293B" }) => {
-
   return (
     <>
       <svg
