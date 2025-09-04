@@ -20,15 +20,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 2 }
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Install dependencies
-        run: |
-          cd backend
-          npm install
+        run: npm install
           
       - name: Install Railway CLI
         run: npm i -g @railway/cli@latest
@@ -36,6 +36,4 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          cd backend
-          railway up --ci
+        run: railway up --ci
