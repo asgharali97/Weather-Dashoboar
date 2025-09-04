@@ -1,4 +1,3 @@
-import React from 'react'
 
 const RainyCloud = ({color="#1E293B"}) => {
   return (
