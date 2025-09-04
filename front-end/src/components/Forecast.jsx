@@ -10,7 +10,7 @@ import snow from "../assets/snow.svg";
 import thunderstorm from "../assets/thunderstorm.svg";
 import cloudy from "../assets/cloudy.svg";
 import RainyCloud from "../assets/RainyCloud";
-import PartlyCloudy from "../assets/PartlyCloudy.svg";
+import PartlyCloudy from "../assets/partlyCloudy.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 const Forecast = () => {
