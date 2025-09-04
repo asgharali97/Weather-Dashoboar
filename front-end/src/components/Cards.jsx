@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 import ProgressBar from "./ProgressBar";
-import Wind from "../assets/wind";
+import Wind from "../assets/Wind";
 import temp from "../assets/temp.svg";
 import speed from "../assets/speed.svg";
 import airQuality from "../assets/airQuality.svg";
-import Compass from "../assets/compass";
+import Compass from "../assets/Compass";
 import { useWeatherContext } from "../context/WeatherContext";
 import useCurrentWeather from "../hooks/useCurrentWeather";
 import { useAirQuality } from "../hooks/reactQueryHooks";
 const Cards = () => {
   const { selectedCity } = useWeatherContext();
-  const { data, isLoading, isError } = useCurrentWeather(selectedCity);
+  const { data, isLoading } = useCurrentWeather(selectedCity);
   const {
     data: aqiData,
     isLoading: aqiLoading,
