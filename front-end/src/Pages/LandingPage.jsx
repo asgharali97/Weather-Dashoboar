@@ -1,5 +1,5 @@
-import Forecast from "../components/forecast"
 import HeroSection from "../components/HeroSection"
+import Forecast from "../components/Forecast"
 
 const LandingPage = () => {
   return (
